@@ -1,0 +1,81 @@
+--- a/net/minecraft/world/level/portal/PortalForcer.java
++++ b/net/minecraft/world/level/portal/PortalForcer.java
+@@ -42,11 +_,13 @@
+     @Deprecated @io.papermc.paper.annotation.DoNotUse // Paper
+     public Optional<BlockPos> findClosestPortalPosition(BlockPos exitPos, boolean isNether, WorldBorder worldBorder) {
+         // CraftBukkit start
+-        return this.findClosestPortalPosition(exitPos, worldBorder, isNether ? 16 : 128); // Search Radius
++        // Tentacles start - Amplified portals - Allow limiting to specific frame material
++        return this.findClosestPortalPosition(exitPos, worldBorder, isNether ? 16 : 128, null); // Search Radius
+     }
+ 
+-    public Optional<BlockPos> findClosestPortalPosition(BlockPos exitPos, WorldBorder worldBorder, int i) {
++    public Optional<BlockPos> findClosestPortalPosition(BlockPos exitPos, WorldBorder worldBorder, int i, @javax.annotation.Nullable Block frame) {
+         PoiManager poiManager = this.level.getPoiManager();
++        // Tentacles end - Amplified portals - Allow limiting to specific frame material
+         // int i = isNether ? 16 : 128;
+         // CraftBukkit end
+         // Paper start - optimise portals
+@@ -64,6 +_,24 @@
+                 if (!worldBorder.isWithinBounds(pos) || (this.level.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.NETHER && this.level.paperConfig().environment.netherCeilingVoidDamageHeight.test(v -> pos.getY() >= v))) { // Paper - Configurable nether ceiling damage
+                     return false;
+                 }
++
++                // Tentacles start - Amplified portals - Allow limiting to specific frame material
++                BlockPos checkPos = pos;
++                BlockState checkState;
++
++                do {
++                    checkPos = checkPos.below();
++                    checkState = lowest.getBlockState(checkPos);
++                } while(checkState.is(Blocks.NETHER_PORTAL));
++
++                if (frame != null && !checkState.is(frame)) {
++                    return false;
++                } else if (frame == null && !checkState.is(Blocks.OBSIDIAN)
++                        && (!org.purpurmc.purpur.PurpurConfig.cryingObsidianValidForPortalFrame || !checkState.is(Blocks.CRYING_OBSIDIAN))) { // Default frame
++                    return false;
++                }
++                // Tentacles end - Amplified portals - Allow limiting to specific frame material
++
+                 return lowest.getBlockState(pos).hasProperty(BlockStateProperties.HORIZONTAL_AXIS);
+             },
+             exitPos, i, Double.MAX_VALUE, PoiManager.Occupancy.ANY, true, records
+@@ -85,11 +_,17 @@
+ 
+     public Optional<BlockUtil.FoundRectangle> createPortal(BlockPos pos, Direction.Axis axis) {
+         // CraftBukkit start
+-        return this.createPortal(pos, axis, null, 16);
++        // Tentacles start - Amplified portals - Allow specifying frame material
++        return this.createPortal(pos, axis, null, 16, null);
+     }
+ 
+-    public Optional<BlockUtil.FoundRectangle> createPortal(BlockPos pos, Direction.Axis axis, @javax.annotation.Nullable net.minecraft.world.entity.Entity entity, int createRadius) {
++    public Optional<BlockUtil.FoundRectangle> createPortal(BlockPos pos, Direction.Axis axis, @javax.annotation.Nullable net.minecraft.world.entity.Entity entity, int createRadius, @javax.annotation.Nullable Block frame) {
+         // CraftBukkit end
++        if (frame == null) {
++            frame = Blocks.OBSIDIAN;
++        }
++        // Tentacles end - Amplified portals - Allow specifying frame material
++
+         Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, axis);
+         double d = -1.0;
+         BlockPos blockPos = null;
+@@ -164,7 +_,7 @@
+             for (int i1x = -1; i1x < 2; i1x++) {
+                 for (int i2 = 0; i2 < 2; i2++) {
+                     for (int i3 = -1; i3 < 3; i3++) {
+-                        BlockState blockState = i3 < 0 ? Blocks.OBSIDIAN.defaultBlockState() : Blocks.AIR.defaultBlockState();
++                        BlockState blockState = i3 < 0 ? frame.defaultBlockState() : Blocks.AIR.defaultBlockState(); // Tentacles - Amplified portals - Allow specifying frame material
+                         mutableBlockPos.setWithOffset(
+                             blockPos, i2 * direction.getStepX() + i1x * clockWise.getStepX(), i3, i2 * direction.getStepZ() + i1x * clockWise.getStepZ()
+                         );
+@@ -178,7 +_,7 @@
+             for (int i4 = -1; i4 < 4; i4++) {
+                 if (max == -1 || max == 2 || i4 == -1 || i4 == 3) {
+                     mutableBlockPos.setWithOffset(blockPos, max * direction.getStepX(), i4, max * direction.getStepZ());
+-                    blockList.setBlock(mutableBlockPos, Blocks.OBSIDIAN.defaultBlockState(), Block.UPDATE_ALL); // CraftBukkit
++                    blockList.setBlock(mutableBlockPos, frame.defaultBlockState(), Block.UPDATE_ALL); // CraftBukkit // Tentacles - Amplified portals - Allow specifying frame material
+                 }
+             }
+         }
