@@ -1,56 +1,59 @@
 --- a/net/minecraft/world/level/block/BaseFireBlock.java
 +++ b/net/minecraft/world/level/block/BaseFireBlock.java
-@@ -170,6 +_,14 @@
-                     optional.get().createPortalBlocks(level, (context == null) ? null : context.getPlayer()); // CraftBukkit - player
-                     return;
-                 }
+@@ -165,11 +_,16 @@
+     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston, net.minecraft.world.item.context.UseOnContext context) { // CraftBukkit - context
+         if (!oldState.is(state.getBlock())) {
+             if (inPortalDimension(level)) {
+-                Optional<PortalShape> optional = PortalShape.findEmptyPortalShape(level, pos, Direction.Axis.X);
+-                if (optional.isPresent()) {
+-                    optional.get().createPortalBlocks(level, (context == null) ? null : context.getPlayer()); // CraftBukkit - player
+-                    return;
++                // Tentacles start - Custom portals - Check all frame predicates
++                for (StatePredicate predicate: PortalShape.framePredicates.values()) {
++                    Optional<PortalShape> optional = PortalShape.findEmptyPortalShape(level, pos, Direction.Axis.X, predicate);
 +
-+                // Tentacles start - Amplified Portals
-+                optional = PortalShape.findEmptyPortalShape(level, pos, Direction.Axis.X, PortalShape.AMPLIFIED_FRAME);
-+                if (optional.isPresent()) {
-+                    optional.get().createPortalBlocks(level, (context == null) ? null : context.getPlayer()); // CraftBukkit - player
-+                    return;
-+                }
-+                // Tentacles end - Amplified portals
++                    if (optional.isPresent()) {
++                        optional.get().createPortalBlocks(level, (context == null) ? null : context.getPlayer()); // CraftBukkit - player
++                        return;
++                    }
+                 }
++                // Tentacles end - Custom portals - Check all frame predicates
              }
  
              if (!state.canSurvive(level, pos)) {
-@@ -206,21 +_,35 @@
+@@ -205,23 +_,23 @@
+             return false;
          } else {
              BlockPos.MutableBlockPos mutableBlockPos = pos.mutable();
-             boolean flag = false;
-+            boolean amplifiedFlag = false; // Tentacles - Amplified Portals
+-            boolean flag = false;
  
++            // Tentacles start - Custom portals  - Check all frame predicates
              for (Direction direction1 : Direction.values()) {
 -                if (level.getBlockState(mutableBlockPos.set(pos).move(direction1)).is(Blocks.OBSIDIAN)) {
-+                BlockState state = level.getBlockState(mutableBlockPos.set(pos).move(direction1)); // Tentacles
-+                if (state.is(Blocks.OBSIDIAN) ||
-+                        (org.purpurmc.purpur.PurpurConfig.cryingObsidianValidForPortalFrame && state.is(Blocks.CRYING_OBSIDIAN))) { // Tentacles - Fix crying obsidian check
-                     flag = true;
-                     break;
-                 }
+-                    flag = true;
+-                    break;
++                BlockState state = level.getBlockState(mutableBlockPos.set(pos).move(direction1));
++                for (StatePredicate predicate: PortalShape.framePredicates.values()) {
++                    if (predicate.test(state, level, pos)) {
++                        Direction.Axis axis = direction.getAxis().isHorizontal()
++                        ? direction.getCounterClockWise().getAxis()
++                        : Direction.Plane.HORIZONTAL.getRandomAxis(level.random);
 +
-+                // Tentacles start - Amplified portals
-+                if (state.is(Blocks.BASALT)) {
-+                    amplifiedFlag = true;
-+                    break;
-+                }
-+                // Tentacles end - Amplified portals
++                        return PortalShape.findEmptyPortalShape(level, pos, axis, predicate).isPresent();
++                    }
+                 }
              }
  
 -            if (!flag) {
-+            if (!flag && !amplifiedFlag) { // Tentacles - Amplified portals
-                 return false;
-             } else {
-                 Direction.Axis axis = direction.getAxis().isHorizontal()
-                     ? direction.getCounterClockWise().getAxis()
-                     : Direction.Plane.HORIZONTAL.getRandomAxis(level.random);
+-                return false;
+-            } else {
+-                Direction.Axis axis = direction.getAxis().isHorizontal()
+-                    ? direction.getCounterClockWise().getAxis()
+-                    : Direction.Plane.HORIZONTAL.getRandomAxis(level.random);
 -                return PortalShape.findEmptyPortalShape(level, pos, axis).isPresent();
-+                // Tentacles start - Amplified portals
-+                return amplifiedFlag ?
-+                        PortalShape.findEmptyPortalShape(level, pos, axis, PortalShape.AMPLIFIED_FRAME).isPresent() :
-+                        PortalShape.findEmptyPortalShape(level, pos, axis).isPresent();
-+                // Tentacles end - Amplified portals
-             }
+-            }
++            return false;
++            // Tentacles end - Custom portals - Check all frame predicates
          }
      }
+ 

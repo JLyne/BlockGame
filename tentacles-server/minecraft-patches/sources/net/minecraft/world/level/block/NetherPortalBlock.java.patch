@@ -5,48 +5,63 @@
          Direction.Axis axis1 = state.getValue(AXIS);
          boolean flag = axis1 != axis && axis.isHorizontal();
 -        return !flag && !neighborState.is(this) && !PortalShape.findAnyShape(level, pos, axis1).isComplete()
-+        return !flag && !neighborState.is(this) && !PortalShape.findAnyShape(level, pos, axis1).isComplete() && !PortalShape.findAnyShape(level, pos, axis1, PortalShape.AMPLIFIED_FRAME).isComplete() // Tentacles - Amplified portals
++        return !flag && !neighborState.is(this) && PortalShape.framePredicates.values().stream().noneMatch(p -> PortalShape.findAnyShape(level, pos, axis1).isComplete()) // Tentacles - Custom portals - check all frame predicates
              ? Blocks.AIR.defaultBlockState()
              : super.updateShape(state, level, scheduledTickAccess, pos, direction, neighborPos, neighborState, random);
      }
-@@ -136,6 +_,21 @@
+@@ -136,8 +_,36 @@
  
      @Override
      public @Nullable TeleportTransition getPortalDestination(ServerLevel level, Entity entity, BlockPos pos) {
-+        // Tentacles start - Amplified portals - Check frame material
++        // Tentacles start - Custom portals - Check frame material, determine destination and return portal material
+         // CraftBukkit start
+         ResourceKey<Level> resourceKey = level.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.NETHER ? Level.OVERWORLD : Level.NETHER;
 +        BlockPos checkPos = pos;
 +        BlockState checkState;
 +        Block frameBlock = null;
++        StatePredicate framePredicate = null;
 +
 +        do {
 +            checkPos = checkPos.below();
 +            checkState = level.getBlockState(checkPos);
 +        } while(checkState.is(Blocks.NETHER_PORTAL) && checkPos.getY() > level.getMinY());
 +
-+        if (checkState.is(Blocks.BASALT)) {
-+            frameBlock = checkState.getBlock();
-+        }
-+        // Tentacles end - Amplified portals - Check frame material
++        for (Map.Entry<ResourceKey<Level>, StatePredicate> entry : PortalShape.framePredicates.entrySet()) {
++            if (entry.getValue().test(checkState, level, checkPos)) {
++                // Destination world is the world associated with the frame material
++                // If we are already in that world then the destination is the Overworld
++                resourceKey = level.dimension().equals(entry.getKey()) ? Level.OVERWORLD : entry.getKey();
 +
-         // CraftBukkit start
-         ResourceKey<Level> resourceKey = level.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.NETHER ? Level.OVERWORLD : Level.NETHER;
++                // Ensure we find or create a matching return portal
++                // The destination portal should be made out of the material required to return to the original world
++                // E.g Basalt Amplified portal in the Nether should look for an Obsidian portal at the Amplified destination
++                framePredicate = PortalShape.framePredicates.getOrDefault(level.dimension(), PortalShape.framePredicates.getOrDefault(resourceKey, PortalShape.FRAME));
++                frameBlock = PortalShape.frameBlocks.getOrDefault(level.dimension(), PortalShape.frameBlocks.getOrDefault(resourceKey, Blocks.OBSIDIAN));
++                org.bukkit.Bukkit.getLogger().info("Destination world " + resourceKey + " destination portal frameBlock " + frameBlock);
++                break;
++            }
++        }
++        // Tentacles end - Custom portals - Check frame material, determine destination and return portal material
++
          ServerLevel level1 = level.getServer().getLevel(resourceKey);
+         // Paper start - Add EntityPortalReadyEvent
+         io.papermc.paper.event.entity.EntityPortalReadyEvent portalReadyEvent = new io.papermc.paper.event.entity.EntityPortalReadyEvent(entity.getBukkitEntity(), level1 == null ? null : level1.getWorld(), org.bukkit.PortalType.NETHER);
 @@ -168,15 +_,15 @@
              level1 = ((org.bukkit.craftbukkit.CraftWorld) result.to().getWorld()).getHandle();
              worldBorder = level1.getWorldBorder();
              blockPos = worldBorder.clampToBounds(result.to().getX(), result.to().getY(), result.to().getZ());
 -            return this.getExitPortal(level1, entity, pos, blockPos, worldBorder, result);
-+            return this.getExitPortal(level1, entity, pos, blockPos, worldBorder, result, frameBlock); // Tentacles - Amplified portals - Allow specifying frame material
++            return this.getExitPortal(level1, entity, pos, blockPos, worldBorder, result, framePredicate, frameBlock); // Tentacles - Custom portals - Allow specifying frame predicate and material
              // CraftBukkit end
          }
      }
  
      private @Nullable TeleportTransition getExitPortal(
 -        ServerLevel level, Entity entity, BlockPos pos, BlockPos exitPos, WorldBorder worldBorder, org.bukkit.craftbukkit.event.PortalEventResult result // CraftBukkit
-+        ServerLevel level, Entity entity, BlockPos pos, BlockPos exitPos, WorldBorder worldBorder, org.bukkit.craftbukkit.event.PortalEventResult result, @Nullable Block frameBlock // CraftBukkit // Tentacles - Custom portal frame
++        ServerLevel level, Entity entity, BlockPos pos, BlockPos exitPos, WorldBorder worldBorder, org.bukkit.craftbukkit.event.PortalEventResult result, @Nullable StatePredicate framePredicate, @Nullable Block frameBlock // CraftBukkit // Tentacles - Custom portal frame
      ) {
 -        Optional<BlockPos> optional = level.getPortalForcer().findClosestPortalPosition(exitPos, worldBorder, result.searchRadius()); // CraftBukkit
-+        Optional<BlockPos> optional = level.getPortalForcer().findClosestPortalPosition(exitPos, worldBorder, result.searchRadius(), frameBlock); // CraftBukkit // Tentacles - Amplified portals - Allow limiting to specific frame material
++        Optional<BlockPos> optional = level.getPortalForcer().findClosestPortalPosition(exitPos, worldBorder, result.searchRadius(), framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow limiting to specific frame material
          BlockUtil.FoundRectangle largestRectangleAround;
          TeleportTransition.PostTeleportTransition postTeleportTransition;
          if (optional.isPresent()) {
@@ -55,7 +70,7 @@
          } else if (result.canCreatePortal()) { // CraftBukkit
              Direction.Axis axis = entity.level().getBlockState(pos).getOptionalValue(AXIS).orElse(Direction.Axis.X);
 -            Optional<BlockUtil.FoundRectangle> optional1 = level.getPortalForcer().createPortal(exitPos, axis, entity, result.createRadius()); // CraftBukkit
-+            Optional<BlockUtil.FoundRectangle> optional1 = level.getPortalForcer().createPortal(exitPos, axis, entity, result.createRadius(), frameBlock); // CraftBukkit // Tentacles - Amplified portals - Allow specifying frame material
++            Optional<BlockUtil.FoundRectangle> optional1 = level.getPortalForcer().createPortal(exitPos, axis, entity, result.createRadius(), frameBlock); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame material
              if (optional1.isEmpty()) {
                  // LOGGER.error("Unable to create a portal, likely target out of worldborder"); // CraftBukkit
                  return null;
