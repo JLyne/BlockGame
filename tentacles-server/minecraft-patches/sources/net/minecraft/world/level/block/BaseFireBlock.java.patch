@@ -29,7 +29,7 @@
  
 +            // Tentacles start - Custom portals  - Check all frame predicates
              for (Direction direction1 : Direction.values()) {
--                if (level.getBlockState(mutableBlockPos.set(pos).move(direction1)).is(Blocks.OBSIDIAN)) {
+-                if (PortalShape.FRAME.test(level.getBlockState(mutableBlockPos.set(pos).move(direction1)), level, mutableBlockPos)) { // Purpur - Crying obsidian valid for portal frames
 -                    flag = true;
 -                    break;
 +                BlockState state = level.getBlockState(mutableBlockPos.set(pos).move(direction1));
