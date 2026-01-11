@@ -1,7 +1,7 @@
 name: Upstream
-on:
-  schedule:
-    - cron: "*/15 * * * *"
+on: {}
+  #schedule:
+  #  - cron: "*/15 * * * *"
 jobs:
   upstream:
     runs-on: ubuntu-latest
