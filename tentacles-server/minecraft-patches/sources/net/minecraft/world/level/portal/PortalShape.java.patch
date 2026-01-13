@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/portal/PortalShape.java
 +++ b/net/minecraft/world/level/portal/PortalShape.java
-@@ -30,6 +_,24 @@
+@@ -30,6 +_,31 @@
      private static final int MIN_HEIGHT = 3;
      public static final int MAX_HEIGHT = 21;
      public static final BlockBehaviour.StatePredicate FRAME = (state, level, pos) -> state.is(Blocks.OBSIDIAN) || (org.purpurmc.purpur.PurpurConfig.cryingObsidianValidForPortalFrame && state.is(Blocks.CRYING_OBSIDIAN)); // Purpur - Crying obsidian valid for portal frames
@@ -10,7 +10,10 @@
 +            ServerLevel.NETHER, Blocks.OBSIDIAN,
 +            net.minecraft.resources.ResourceKey.create(
 +                    net.minecraft.core.registries.Registries.DIMENSION,
-+                    net.minecraft.resources.Identifier.withDefaultNamespace("amplified")), Blocks.BASALT
++                    net.minecraft.resources.Identifier.withDefaultNamespace("amplified")), Blocks.BASALT,
++            net.minecraft.resources.ResourceKey.create(
++                    net.minecraft.core.registries.Registries.DIMENSION,
++                    net.minecraft.resources.Identifier.withDefaultNamespace("void")), Blocks.BLACKSTONE
 +    );
 +
 +    // Map of predicates for valid portal frame blocks for a world
@@ -19,7 +22,11 @@
 +            net.minecraft.resources.ResourceKey.create(
 +                    net.minecraft.core.registries.Registries.DIMENSION,
 +                    net.minecraft.resources.Identifier.withDefaultNamespace("amplified")),
-+            (state, level, pos) -> state.is(Blocks.BASALT)
++            (state, level, pos) -> state.is(Blocks.BASALT),
++            net.minecraft.resources.ResourceKey.create(
++                    net.minecraft.core.registries.Registries.DIMENSION,
++                    net.minecraft.resources.Identifier.withDefaultNamespace("void")),
++            (state, level, pos) -> state.is(Blocks.BLACKSTONE)
 +    );
 +    // Tentacles end - Custom portals
      private static final float SAFE_TRAVEL_MAX_ENTITY_XY = 4.0F;
