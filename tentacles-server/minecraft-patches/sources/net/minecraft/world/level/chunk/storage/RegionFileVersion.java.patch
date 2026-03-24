@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/storage/RegionFileVersion.java
 +++ b/net/minecraft/world/level/chunk/storage/RegionFileVersion.java
-@@ -60,6 +_,21 @@
+@@ -49,6 +_,21 @@
      private final RegionFileVersion.StreamWrapper<InputStream> inputWrapper;
      private final RegionFileVersion.StreamWrapper<OutputStream> outputWrapper;
  

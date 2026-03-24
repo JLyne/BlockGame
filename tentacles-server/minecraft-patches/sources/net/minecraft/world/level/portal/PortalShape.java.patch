@@ -32,150 +32,155 @@
      private static final float SAFE_TRAVEL_MAX_ENTITY_XY = 4.0F;
      private static final double SAFE_TRAVEL_MAX_VERTICAL_DELTA = 1.0;
      private final Direction.Axis axis;
-@@ -53,38 +_,57 @@
+@@ -55,40 +_,62 @@
      }
  
-     public static Optional<PortalShape> findEmptyPortalShape(LevelAccessor level, BlockPos bottomLeft, Direction.Axis axis) {
--        return findPortalShape(level, bottomLeft, shape -> shape.isValid() && shape.numPortalBlocks == 0, axis);
+     public static Optional<PortalShape> findEmptyPortalShape(final LevelAccessor level, final BlockPos pos, final Direction.Axis preferredAxis) {
+-        return findPortalShape(level, pos, shape -> shape.isValid() && shape.numPortalBlocks == 0, preferredAxis);
 +        // Tentacles start - Custom portals - Allow specifying frame predicate
-+        return findEmptyPortalShape(level, bottomLeft, axis, FRAME);
++        return findEmptyPortalShape(level, pos, preferredAxis, FRAME);
 +    }
 +
-+    public static Optional<PortalShape> findEmptyPortalShape(LevelAccessor level, BlockPos bottomLeft, Direction.Axis axis, BlockBehaviour.StatePredicate framePredicate) {
-+        return findPortalShape(level, bottomLeft, shape -> shape.isValid() && shape.numPortalBlocks == 0, axis, framePredicate);
++    public static Optional<PortalShape> findEmptyPortalShape(final LevelAccessor level, final BlockPos pos, final Direction.Axis preferredAxis, final BlockBehaviour.StatePredicate framePredicate) {
++        return findPortalShape(level, pos, shape -> shape.isValid() && shape.numPortalBlocks == 0, preferredAxis, framePredicate);
 +        // Tentacles end - Custom portals - Allow specifying frame predicate
      }
  
-     public static Optional<PortalShape> findPortalShape(LevelAccessor level, BlockPos bottomLeft, Predicate<PortalShape> predicate, Direction.Axis axis) {
--        Optional<PortalShape> optional = Optional.of(findAnyShape(level, bottomLeft, axis)).filter(predicate);
+     public static Optional<PortalShape> findPortalShape(
+         final LevelAccessor level, final BlockPos pos, final Predicate<PortalShape> isValid, final Direction.Axis preferredAxis
+     ) {
+         Optional<PortalShape> firstAxis = Optional.of(findAnyShape(level, pos, preferredAxis)).filter(isValid);
 +        // Tentacles start - Custom portals - Allow specifying frame predicate
-+        return findPortalShape(level, bottomLeft, predicate, axis, FRAME);
++        return findPortalShape(level, pos, isValid, preferredAxis, FRAME);
 +    }
 +
-+    public static Optional<PortalShape> findPortalShape(LevelAccessor level, BlockPos bottomLeft, Predicate<PortalShape> predicate, Direction.Axis axis, BlockBehaviour.StatePredicate framePredicate) {
-+        Optional<PortalShape> optional = Optional.of(findAnyShape(level, bottomLeft, axis, framePredicate)).filter(predicate);
++    public static Optional<PortalShape> findPortalShape(
++            final LevelAccessor level, final BlockPos pos, final Predicate<PortalShape> isValid, final Direction.Axis preferredAxis, final BlockBehaviour.StatePredicate framePredicate
++    ) {
++        Optional<PortalShape> firstAxis = Optional.of(findAnyShape(level, pos, preferredAxis, framePredicate)).filter(isValid);
 +        // Tentacles end - Custom portals - Allow specifying frame predicate
 +
-         if (optional.isPresent()) {
-             return optional;
+         if (firstAxis.isPresent()) {
+             return firstAxis;
          } else {
-             Direction.Axis axis1 = axis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
--            return Optional.of(findAnyShape(level, bottomLeft, axis1)).filter(predicate);
-+            return Optional.of(findAnyShape(level, bottomLeft, axis1, framePredicate)).filter(predicate); // Tentacles - Custom portals - Allow specifying frame predicate
+             Direction.Axis otherAxis = preferredAxis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
+-            return Optional.of(findAnyShape(level, pos, otherAxis)).filter(isValid);
++            return Optional.of(findAnyShape(level, pos, otherAxis, framePredicate)).filter(isValid); // Tentacles - Custom portals - Allow specifying frame predicate
          }
      }
  
-     public static PortalShape findAnyShape(BlockGetter level, BlockPos bottomLeft, Direction.Axis axis) {
+     public static PortalShape findAnyShape(final BlockGetter level, final BlockPos pos, final Direction.Axis axis) {
 +        // Tentacles start - Custom portals - Allow specifying frame predicate
-+        return findAnyShape(level, bottomLeft, axis, FRAME);
++        return findAnyShape(level, pos, axis, FRAME);
 +    }
 +
-+    public static PortalShape findAnyShape(BlockGetter level, BlockPos bottomLeft, Direction.Axis axis, BlockBehaviour.StatePredicate framePredicate) {
++    public static PortalShape findAnyShape(final BlockGetter level, final BlockPos pos, final Direction.Axis axis, final BlockBehaviour.StatePredicate framePredicate) {
 +        // Tentacles end - Custom portals - Allow specifying frame predicate
          org.bukkit.craftbukkit.util.BlockStateListPopulator blocks = new org.bukkit.craftbukkit.util.BlockStateListPopulator(((LevelAccessor) level).getMinecraftWorld()); // CraftBukkit
-         Direction direction = axis == Direction.Axis.X ? Direction.WEST : Direction.SOUTH;
--        BlockPos blockPos = calculateBottomLeft(level, direction, bottomLeft, blocks); // CraftBukkit
-+        BlockPos blockPos = calculateBottomLeft(level, direction, bottomLeft, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
-         if (blockPos == null) {
-             return new PortalShape(axis, 0, direction, bottomLeft, 0, 0, blocks); // CraftBukkit
+         Direction rightDir = axis == Direction.Axis.X ? Direction.WEST : Direction.SOUTH;
+-        BlockPos bottomLeft = calculateBottomLeft(level, rightDir, pos, blocks); // CraftBukkit
++        BlockPos bottomLeft = calculateBottomLeft(level, rightDir, pos, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
+         if (bottomLeft == null) {
+             return new PortalShape(axis, 0, rightDir, pos, 0, 0, blocks); // CraftBukkit
          } else {
--            int i = calculateWidth(level, blockPos, direction, blocks); // CraftBukkit
-+            int i = calculateWidth(level, blockPos, direction, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
-             if (i == 0) {
-                 return new PortalShape(axis, 0, direction, blockPos, 0, 0, blocks); // CraftBukkit
+-            int width = calculateWidth(level, bottomLeft, rightDir, blocks); // CraftBukkit
++            int width = calculateWidth(level, bottomLeft, rightDir, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
+             if (width == 0) {
+                 return new PortalShape(axis, 0, rightDir, bottomLeft, 0, 0, blocks); // CraftBukkit
              } else {
-                 MutableInt mutableInt = new MutableInt();
--                int i1 = calculateHeight(level, blockPos, direction, i, mutableInt, blocks); // CraftBukkit
-+                int i1 = calculateHeight(level, blockPos, direction, i, mutableInt, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
-                 return new PortalShape(axis, mutableInt.intValue(), direction, blockPos, i, i1, blocks); // CraftBukkit
+                 MutableInt portalBlockCountOutput = new MutableInt();
+-                int height = calculateHeight(level, bottomLeft, rightDir, width, portalBlockCountOutput, blocks); // CraftBukkit
++                int height = calculateHeight(level, bottomLeft, rightDir, width, portalBlockCountOutput, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
+                 return new PortalShape(axis, portalBlockCountOutput.intValue(), rightDir, bottomLeft, width, height, blocks); // CraftBukkit
              }
          }
      }
  
--    private static @Nullable BlockPos calculateBottomLeft(BlockGetter level, Direction direction, BlockPos pos, org.bukkit.craftbukkit.util.BlockStateListPopulator blocks) { // CraftBukkit
-+    private static @Nullable BlockPos calculateBottomLeft(BlockGetter level, Direction direction, BlockPos pos, org.bukkit.craftbukkit.util.BlockStateListPopulator blocks, BlockBehaviour.StatePredicate framePredicate) { // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
-         int max = Math.max(level.getMinY(), pos.getY() - 21);
+-    private static @Nullable BlockPos calculateBottomLeft(final BlockGetter level, final Direction rightDir, BlockPos pos, final org.bukkit.craftbukkit.util.BlockStateListPopulator blocks) { // CraftBukkit
++    private static @Nullable BlockPos calculateBottomLeft(BlockGetter level, Direction rightDir, BlockPos pos, org.bukkit.craftbukkit.util.BlockStateListPopulator blocks, final BlockBehaviour.StatePredicate framePredicate) { // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
+         int minY = Math.max(level.getMinY(), pos.getY() - 21);
  
-         while (pos.getY() > max && isEmpty(level.getBlockState(pos.below()))) {
-@@ -92,23 +_,23 @@
+         while (pos.getY() > minY && isEmpty(level.getBlockState(pos.below()))) {
+@@ -96,23 +_,23 @@
          }
  
-         Direction opposite = direction.getOpposite();
--        int i = getDistanceUntilEdgeAboveFrame(level, pos, opposite, blocks) - 1; // CraftBukkit
-+        int i = getDistanceUntilEdgeAboveFrame(level, pos, opposite, blocks, framePredicate) - 1; // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
-         return i < 0 ? null : pos.relative(opposite, i);
+         Direction leftDir = rightDir.getOpposite();
+-        int edge = getDistanceUntilEdgeAboveFrame(level, pos, leftDir, blocks) - 1; // CraftBukkit
++        int edge = getDistanceUntilEdgeAboveFrame(level, pos, leftDir, blocks, framePredicate) - 1; // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
+         return edge < 0 ? null : pos.relative(leftDir, edge);
      }
  
--    private static int calculateWidth(BlockGetter level, BlockPos bottomLeft, Direction direction, org.bukkit.craftbukkit.util.BlockStateListPopulator blocks) { // CraftBukkit
--        int distanceUntilEdgeAboveFrame = getDistanceUntilEdgeAboveFrame(level, bottomLeft, direction, blocks); // CraftBukkit
-+    private static int calculateWidth(BlockGetter level, BlockPos bottomLeft, Direction direction, org.bukkit.craftbukkit.util.BlockStateListPopulator blocks, BlockBehaviour.StatePredicate framePredicate) { // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
-+        int distanceUntilEdgeAboveFrame = getDistanceUntilEdgeAboveFrame(level, bottomLeft, direction, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
-         return distanceUntilEdgeAboveFrame >= 2 && distanceUntilEdgeAboveFrame <= 21 ? distanceUntilEdgeAboveFrame : 0;
+-    private static int calculateWidth(final BlockGetter level, final BlockPos bottomLeft, final Direction rightDir, final org.bukkit.craftbukkit.util.BlockStateListPopulator blocks) { // CraftBukkit
+-        int width = getDistanceUntilEdgeAboveFrame(level, bottomLeft, rightDir, blocks); // CraftBukkit
++    private static int calculateWidth(final BlockGetter level, final BlockPos bottomLeft, final Direction rightDir, final org.bukkit.craftbukkit.util.BlockStateListPopulator blocks, final BlockBehaviour.StatePredicate framePredicate) { // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
++        int width = getDistanceUntilEdgeAboveFrame(level, bottomLeft, rightDir, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
+         return width >= 2 && width <= 21 ? width : 0;
      }
  
--    private static int getDistanceUntilEdgeAboveFrame(BlockGetter level, BlockPos pos, Direction direction, org.bukkit.craftbukkit.util.BlockStateListPopulator blocks) { // CraftBukkit
-+    private static int getDistanceUntilEdgeAboveFrame(BlockGetter level, BlockPos pos, Direction direction, org.bukkit.craftbukkit.util.BlockStateListPopulator blocks, BlockBehaviour.StatePredicate framePredicate) { // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
-         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+-    private static int getDistanceUntilEdgeAboveFrame(final BlockGetter level, final BlockPos pos, final Direction direction, final org.bukkit.craftbukkit.util.BlockStateListPopulator blocks) { // CraftBukkit
++    private static int getDistanceUntilEdgeAboveFrame(final BlockGetter level, final BlockPos pos, final Direction direction, final org.bukkit.craftbukkit.util.BlockStateListPopulator blocks, final BlockBehaviour.StatePredicate framePredicate) { // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
+         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
  
-         for (int i = 0; i <= 21; i++) {
-             mutableBlockPos.set(pos).move(direction, i);
-             BlockState blockState = level.getBlockState(mutableBlockPos);
+         for (int width = 0; width <= 21; width++) {
+             blockPos.set(pos).move(direction, width);
+             BlockState blockState = level.getBlockState(blockPos);
              if (!isEmpty(blockState)) {
--                if (FRAME.test(blockState, level, mutableBlockPos)) {
-+                if (framePredicate.test(blockState, level, mutableBlockPos)) { // Tentacles - Custom portals - Allow specifying frame predicate
-                     blocks.setBlock(mutableBlockPos, blockState, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE); // CraftBukkit - lower left / right
-                     return i;
+-                if (FRAME.test(blockState, level, blockPos)) {
++                if (framePredicate.test(blockState, level, blockPos)) { // Tentacles - Custom portals - Allow specifying frame predicate
+                     blocks.setBlock(blockPos, blockState, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE); // CraftBukkit - lower left / right
+                     return width;
                  }
-@@ -116,7 +_,7 @@
+@@ -120,7 +_,7 @@
              }
  
-             BlockState blockState1 = level.getBlockState(mutableBlockPos.move(Direction.DOWN));
--            if (!FRAME.test(blockState1, level, mutableBlockPos)) {
-+            if (!framePredicate.test(blockState1, level, mutableBlockPos)) { // Tentacles - Custom portals - Allow specifying frame predicate
+             BlockState belowState = level.getBlockState(blockPos.move(Direction.DOWN));
+-            if (!FRAME.test(belowState, level, blockPos)) {
++            if (!framePredicate.test(belowState, level, blockPos)) { // Tentacles - Custom portals - Allow specifying frame predicate
                  break;
              }
-             blocks.setBlock(mutableBlockPos, blockState1, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE); // CraftBukkit - bottom row
-@@ -125,18 +_,18 @@
-         return 0;
+             blocks.setBlock(blockPos, belowState, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE); // CraftBukkit - bottom row
+@@ -130,19 +_,20 @@
      }
  
--    private static int calculateHeight(BlockGetter level, BlockPos pos, Direction direction, int width, MutableInt portalBlocks, org.bukkit.craftbukkit.util.BlockStateListPopulator blocks) { // CraftBukkit
-+    private static int calculateHeight(BlockGetter level, BlockPos pos, Direction direction, int width, MutableInt portalBlocks, org.bukkit.craftbukkit.util.BlockStateListPopulator blocks, BlockBehaviour.StatePredicate framePredicate) { // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
-         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
--        int distanceUntilTop = getDistanceUntilTop(level, pos, direction, mutableBlockPos, width, portalBlocks, blocks); // CraftBukkit
--        return distanceUntilTop >= 3 && distanceUntilTop <= 21 && hasTopFrame(level, pos, direction, mutableBlockPos, width, distanceUntilTop, blocks) // CraftBukkit
-+        int distanceUntilTop = getDistanceUntilTop(level, pos, direction, mutableBlockPos, width, portalBlocks, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
-+        return distanceUntilTop >= 3 && distanceUntilTop <= 21 && hasTopFrame(level, pos, direction, mutableBlockPos, width, distanceUntilTop, blocks, framePredicate) // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
-             ? distanceUntilTop
-             : 0;
+     private static int calculateHeight(
+-        final BlockGetter level, final BlockPos bottomLeft, final Direction rightDir, final int width, final MutableInt portalBlockCount, final org.bukkit.craftbukkit.util.BlockStateListPopulator blocks // CraftBukkit
++        final BlockGetter level, final BlockPos bottomLeft, final Direction rightDir, final int width, final MutableInt portalBlockCount, final org.bukkit.craftbukkit.util.BlockStateListPopulator blocks, final BlockBehaviour.StatePredicate framePredicate // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
+     ) {
++
+         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+-        int height = getDistanceUntilTop(level, bottomLeft, rightDir, pos, width, portalBlockCount, blocks); // CraftBukkit
+-        return height >= 3 && height <= 21 && hasTopFrame(level, bottomLeft, rightDir, pos, width, height, blocks) ? height : 0; // CraftBukkit
++        int height = getDistanceUntilTop(level, bottomLeft, rightDir, pos, width, portalBlockCount, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
++        return height >= 3 && height <= 21 && hasTopFrame(level, bottomLeft, rightDir, pos, width, height, blocks, framePredicate) ? height : 0; // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
      }
  
--    private static boolean hasTopFrame(BlockGetter level, BlockPos pos, Direction direction, BlockPos.MutableBlockPos checkPos, int width, int distanceUntilTop, org.bukkit.craftbukkit.util.BlockStateListPopulator blocks) { // CraftBukkit
-+    private static boolean hasTopFrame(BlockGetter level, BlockPos pos, Direction direction, BlockPos.MutableBlockPos checkPos, int width, int distanceUntilTop, org.bukkit.craftbukkit.util.BlockStateListPopulator blocks, BlockBehaviour.StatePredicate framePredicate) { // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
+     private static boolean hasTopFrame(
+-        final BlockGetter level, final BlockPos bottomLeft, final Direction rightDir, final BlockPos.MutableBlockPos pos, final int width, final int height, final org.bukkit.craftbukkit.util.BlockStateListPopulator blocks // CraftBukkit
++        final BlockGetter level, final BlockPos bottomLeft, final Direction rightDir, final BlockPos.MutableBlockPos pos, final int width, final int height, final org.bukkit.craftbukkit.util.BlockStateListPopulator blocks, final BlockBehaviour.StatePredicate framePredicate // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
+     ) {
          for (int i = 0; i < width; i++) {
-             BlockPos.MutableBlockPos mutableBlockPos = checkPos.set(pos).move(Direction.UP, distanceUntilTop).move(direction, i);
--            if (!FRAME.test(level.getBlockState(mutableBlockPos), level, mutableBlockPos)) {
-+            if (!framePredicate.test(level.getBlockState(mutableBlockPos), level, mutableBlockPos)) { // Tentacles - Custom portals - Allow specifying frame predicate
+             BlockPos.MutableBlockPos framePos = pos.set(bottomLeft).move(Direction.UP, height).move(rightDir, i);
+-            if (!FRAME.test(level.getBlockState(framePos), level, framePos)) {
++            if (!framePredicate.test(level.getBlockState(framePos), level, framePos)) { // Tentacles - Custom portals - Allow specifying frame predicate
                  return false;
              }
-             blocks.setBlock(mutableBlockPos, level.getBlockState(mutableBlockPos), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE); // CraftBukkit - upper row
-@@ -146,16 +_,16 @@
-     }
- 
-     private static int getDistanceUntilTop(
--        BlockGetter level, BlockPos pos, Direction direction, BlockPos.MutableBlockPos checkPos, int width, MutableInt portalBlocks, org.bukkit.craftbukkit.util.BlockStateListPopulator blocks // CraftBukkit
-+        BlockGetter level, BlockPos pos, Direction direction, BlockPos.MutableBlockPos checkPos, int width, MutableInt portalBlocks, org.bukkit.craftbukkit.util.BlockStateListPopulator blocks, BlockBehaviour.StatePredicate framePredicate // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
+             blocks.setBlock(framePos, level.getBlockState(framePos), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE); // CraftBukkit - upper row
+@@ -158,15 +_,16 @@
+         final BlockPos.MutableBlockPos pos,
+         final int width,
+         final MutableInt portalBlockCount, final org.bukkit.craftbukkit.util.BlockStateListPopulator blocks // CraftBukkit
++        , final BlockBehaviour.StatePredicate framePredicate // Tentacles - Custom portals - Allow specifying frame predicate
      ) {
-         for (int i = 0; i < 21; i++) {
-             checkPos.set(pos).move(Direction.UP, i).move(direction, -1);
--            if (!FRAME.test(level.getBlockState(checkPos), level, checkPos)) {
-+            if (!framePredicate.test(level.getBlockState(checkPos), level, checkPos)) { // Tentacles - Custom portals - Allow specifying frame predicate
-                 return i;
+         for (int height = 0; height < 21; height++) {
+             pos.set(bottomLeft).move(Direction.UP, height).move(rightDir, -1);
+-            if (!FRAME.test(level.getBlockState(pos), level, pos)) {
++            if (!framePredicate.test(level.getBlockState(pos), level, pos)) { // Tentacles - Custom portals - Allow specifying frame predicate
+                 return height;
              }
  
-             checkPos.set(pos).move(Direction.UP, i).move(direction, width);
--            if (!FRAME.test(level.getBlockState(checkPos), level, checkPos)) {
-+            if (!framePredicate.test(level.getBlockState(checkPos), level, checkPos)) { // Tentacles - Custom portals - Allow specifying frame predicate
-                 return i;
+             pos.set(bottomLeft).move(Direction.UP, height).move(rightDir, width);
+-            if (!FRAME.test(level.getBlockState(pos), level, pos)) {
++            if (!framePredicate.test(level.getBlockState(pos), level, pos)) { // Tentacles - Custom portals - Allow specifying frame predicate
+                 return height;
              }
  
