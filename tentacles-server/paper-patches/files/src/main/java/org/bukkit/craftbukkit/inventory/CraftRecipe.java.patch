@@ -1,0 +1,15 @@
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftRecipe.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftRecipe.java
+@@ -77,7 +_,11 @@
+                 choices.add(CraftItemStack.asBukkitCopy(i));
+             }
+ 
+-            return new RecipeChoice.ExactChoice(choices);
++            // Purpur start - Add predicate to recipe's ExactChoice ingredient
++            RecipeChoice.ExactChoice choice = new RecipeChoice.ExactChoice(choices);
++            choice.setPredicate(list.predicate);
++            return choice;
++            // Purpur end - Add predicate to recipe's ExactChoice ingredient
+         } else {
+             final RegistryKeySet<ItemType> itemTypes = PaperRegistrySets.convertToApi(RegistryKey.ITEM, list.values);
+             return RecipeChoice.itemType(itemTypes);
