@@ -1,24 +1,19 @@
 --- a/net/minecraft/world/level/chunk/storage/RegionFileVersion.java
 +++ b/net/minecraft/world/level/chunk/storage/RegionFileVersion.java
-@@ -60,6 +_,21 @@
-     private final RegionFileVersion.StreamWrapper<InputStream> inputWrapper;
-     private final RegionFileVersion.StreamWrapper<OutputStream> outputWrapper;
+@@ -91,6 +_,16 @@
+         return selected;
+     }
  
 +    // Tentacles start - Per-world region compression format
-+    public static RegionFileVersion getCompressionFormat(String level) {
++    public static RegionFileVersion getSelected(String level) {
 +        // Can't use PurpurWorldConfig here as WorldUpgrader (--forceUpgrade) happens before the world is loaded
 +        //FIXME: getString might be slow?
 +        String format = org.purpurmc.purpur.PurpurConfig.config
 +                .getString("world-settings." + level + ".settings.compression-format", "default").toLowerCase();
-+        return switch (format) {
-+            case "gzip" -> VERSION_GZIP;
-+            case "zlib" -> VERSION_DEFLATE;
-+            case "lz4" -> VERSION_LZ4;
-+            case "none" -> VERSION_NONE;
-+            default -> getCompressionFormat();
-+        };
++        return VERSIONS_BY_NAME.getOrDefault(format, getSelected());
 +    }
 +    // Tentacles end- Per-world region compression format
-     // Paper start - Configurable region compression format
-     public static RegionFileVersion getCompressionFormat() {
-         return switch (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.compressionFormat) {
++
+     public static boolean isValidVersion(final int version) {
+         return VERSIONS.containsKey(version);
+     }

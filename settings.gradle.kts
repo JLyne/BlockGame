@@ -52,3 +52,15 @@ fun optionalInclude(name: String, op: (ProjectDescriptor.() -> Unit)? = null) {
         )
     }
 }
+
+gradle.lifecycle.beforeProject {
+    val mcVersion = providers.gradleProperty("mcVersion").get().trim()
+    val tentaclesChannel = providers.gradleProperty("channel").get().trim()
+    val tentaclesBuildNumber = providers.environmentVariable("BUILD_NUMBER").orNull?.trim()?.toInt()
+    val versionString = if (tentaclesBuildNumber == null) {
+        "$mcVersion.local-SNAPSHOT"
+    } else {
+        "$mcVersion.build.$tentaclesBuildNumber-${tentaclesChannel.lowercase()}"
+    }
+    version = versionString
+}
