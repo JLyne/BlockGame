@@ -45,15 +45,15 @@
          ServerLevel newLevel = currentLevel.getServer().getLevel(newDimension);
          // Paper start - Add EntityPortalReadyEvent
          io.papermc.paper.event.entity.EntityPortalReadyEvent portalReadyEvent = new io.papermc.paper.event.entity.EntityPortalReadyEvent(entity.getBukkitEntity(), newLevel == null ? null : newLevel.getWorld(), org.bukkit.PortalType.NETHER);
-@@ -174,7 +_,7 @@
-             newLevel = ((org.bukkit.craftbukkit.CraftWorld) result.to().getWorld()).getHandle();
-             newWorldBorder = newLevel.getWorldBorder();
-             approximateExitPos = newWorldBorder.clampToBounds(result.to().getX(), result.to().getY(), result.to().getZ());
--            return this.getExitPortal(newLevel, entity, portalEntryPos, approximateExitPos, toNether, newWorldBorder, result);
-+            return this.getExitPortal(newLevel, entity, portalEntryPos, approximateExitPos, toNether, newWorldBorder, result, framePredicate, frameBlock); // Tentacles - Custom portals - Allow specifying frame predicate and material
-             // CraftBukkit end
-         }
+@@ -175,7 +_,7 @@
+         newLevel = ((org.bukkit.craftbukkit.CraftWorld) result.to().getWorld()).getHandle();
+         newWorldBorder = newLevel.getWorldBorder();
+         approximateExitPos = newWorldBorder.clampToBounds(result.to().getX(), result.to().getY(), result.to().getZ());
+-        return this.getExitPortal(newLevel, entity, portalEntryPos, approximateExitPos, toNether, newWorldBorder, result);
++        return this.getExitPortal(newLevel, entity, portalEntryPos, approximateExitPos, toNether, newWorldBorder, result, framePredicate, frameBlock); // Tentacles - Custom portals - Allow specifying frame predicate and material
+         // CraftBukkit end
      }
+ 
 @@ -187,8 +_,10 @@
          final boolean toNether,
          final WorldBorder worldBorder

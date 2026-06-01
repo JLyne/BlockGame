@@ -62,11 +62,11 @@
 +
          if (firstAxis.isPresent()) {
              return firstAxis;
-         } else {
-             Direction.Axis otherAxis = preferredAxis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
--            return Optional.of(findAnyShape(level, pos, otherAxis)).filter(isValid);
-+            return Optional.of(findAnyShape(level, pos, otherAxis, framePredicate)).filter(isValid); // Tentacles - Custom portals - Allow specifying frame predicate
          }
+ 
+         Direction.Axis otherAxis = preferredAxis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
+-        return Optional.of(findAnyShape(level, pos, otherAxis)).filter(isValid);
++        return Optional.of(findAnyShape(level, pos, otherAxis, framePredicate)).filter(isValid); // Tentacles - Custom portals - Allow specifying frame predicate
      }
  
      public static PortalShape findAnyShape(final BlockGetter level, final BlockPos pos, final Direction.Axis axis) {
@@ -82,18 +82,18 @@
 +        BlockPos bottomLeft = calculateBottomLeft(level, rightDir, pos, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
          if (bottomLeft == null) {
              return new PortalShape(axis, 0, rightDir, pos, 0, 0, blocks); // CraftBukkit
-         } else {
--            int width = calculateWidth(level, bottomLeft, rightDir, blocks); // CraftBukkit
-+            int width = calculateWidth(level, bottomLeft, rightDir, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
-             if (width == 0) {
-                 return new PortalShape(axis, 0, rightDir, bottomLeft, 0, 0, blocks); // CraftBukkit
-             } else {
-                 MutableInt portalBlockCountOutput = new MutableInt();
--                int height = calculateHeight(level, bottomLeft, rightDir, width, portalBlockCountOutput, blocks); // CraftBukkit
-+                int height = calculateHeight(level, bottomLeft, rightDir, width, portalBlockCountOutput, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
-                 return new PortalShape(axis, portalBlockCountOutput.intValue(), rightDir, bottomLeft, width, height, blocks); // CraftBukkit
-             }
          }
+ 
+-        int width = calculateWidth(level, bottomLeft, rightDir, blocks); // CraftBukkit
++        int width = calculateWidth(level, bottomLeft, rightDir, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
+         if (width == 0) {
+             return new PortalShape(axis, 0, rightDir, bottomLeft, 0, 0, blocks); // CraftBukkit
+         }
+ 
+         MutableInt portalBlockCountOutput = new MutableInt();
+-        int height = calculateHeight(level, bottomLeft, rightDir, width, portalBlockCountOutput, blocks); // CraftBukkit
++        int height = calculateHeight(level, bottomLeft, rightDir, width, portalBlockCountOutput, blocks, framePredicate); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame predicate
+         return new PortalShape(axis, portalBlockCountOutput.intValue(), rightDir, bottomLeft, width, height, blocks); // CraftBukkit
      }
  
 -    private static @Nullable BlockPos calculateBottomLeft(final BlockGetter level, final Direction rightDir, BlockPos pos, final org.bukkit.craftbukkit.util.BlockStateListPopulator blocks) { // CraftBukkit

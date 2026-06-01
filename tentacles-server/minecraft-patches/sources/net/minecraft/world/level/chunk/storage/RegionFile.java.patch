@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/storage/RegionFile.java
 +++ b/net/minecraft/world/level/chunk/storage/RegionFile.java
-@@ -420,7 +_,7 @@
+@@ -419,7 +_,7 @@
      // Paper end - rewrite chunk system
  
      public RegionFile(final RegionStorageInfo info, final Path path, final Path externalFileDir, final boolean sync) throws IOException {
