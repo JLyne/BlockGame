@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/NetherPortalBlock.java
 +++ b/net/minecraft/world/level/block/NetherPortalBlock.java
-@@ -105,7 +_,7 @@
+@@ -107,7 +_,7 @@
          Direction.Axis updateAxis = directionToNeighbour.getAxis();
          Direction.Axis axis = state.getValue(AXIS);
          boolean wrongAxis = axis != updateAxis && updateAxis.isHorizontal();
@@ -9,7 +9,7 @@
              ? Blocks.AIR.defaultBlockState()
              : super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
      }
-@@ -143,7 +_,35 @@
+@@ -145,7 +_,35 @@
  
      @Override
      public @Nullable TeleportTransition getPortalDestination(final ServerLevel currentLevel, final Entity entity, final BlockPos portalEntryPos) {
@@ -45,7 +45,7 @@
          ServerLevel newLevel = currentLevel.getServer().getLevel(newDimension);
          // Paper start - Add EntityPortalReadyEvent
          io.papermc.paper.event.entity.EntityPortalReadyEvent portalReadyEvent = new io.papermc.paper.event.entity.EntityPortalReadyEvent(entity.getBukkitEntity(), newLevel == null ? null : newLevel.getWorld(), org.bukkit.PortalType.NETHER);
-@@ -175,7 +_,7 @@
+@@ -177,7 +_,7 @@
          newLevel = ((org.bukkit.craftbukkit.CraftWorld) result.to().getWorld()).getHandle();
          newWorldBorder = newLevel.getWorldBorder();
          approximateExitPos = newWorldBorder.clampToBounds(result.to().getX(), result.to().getY(), result.to().getZ());
@@ -54,7 +54,7 @@
          // CraftBukkit end
      }
  
-@@ -187,8 +_,10 @@
+@@ -189,8 +_,10 @@
          final boolean toNether,
          final WorldBorder worldBorder
          , org.bukkit.craftbukkit.event.PortalEventResult result // CraftBukkit
@@ -66,7 +66,7 @@
          BlockUtil.FoundRectangle exitPortal;
          TeleportTransition.PostTeleportTransition post;
          if (exitPortalPos.isPresent()) {
-@@ -205,7 +_,7 @@
+@@ -207,7 +_,7 @@
              post = TeleportTransition.PLAY_PORTAL_SOUND.then(e -> e.placePortalTicket(pos));
          } else if (result.canCreatePortal()) { // CraftBukkit
              Direction.Axis sourcePortalAxis = entity.level().getBlockState(portalEntryPos).getOptionalValue(AXIS).orElse(Direction.Axis.X);
