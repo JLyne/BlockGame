@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/portal/PortalForcer.java
 +++ b/net/minecraft/world/level/portal/PortalForcer.java
-@@ -42,11 +_,13 @@
+@@ -42,10 +_,11 @@
      @Deprecated @io.papermc.paper.annotation.DoNotUse // Paper
      public Optional<BlockPos> findClosestPortalPosition(final BlockPos approximateExitPos, final boolean toNether, final WorldBorder worldBorder) {
          // CraftBukkit start
@@ -12,34 +12,30 @@
 -    public Optional<BlockPos> findClosestPortalPosition(final BlockPos approximateExitPos, final WorldBorder worldBorder, final int radius) {
 +    public Optional<BlockPos> findClosestPortalPosition(final BlockPos approximateExitPos, final WorldBorder worldBorder, final int radius, net.minecraft.world.level.block.state.BlockBehaviour.@org.jspecify.annotations.Nullable StatePredicate framePredicate) {
          PoiManager poiManager = this.level.getPoiManager();
-+        // Tentacles end - Custom portals - Allow limiting to specific frame material
          // int radius = toNether ? 16 : 128;
          // CraftBukkit end
-         poiManager.ensureLoadedAndValid(this.level, approximateExitPos, radius);
-@@ -54,17 +_,40 @@
-             .map(PoiRecord::getPos)
-             .filter(worldBorder::isWithinBounds)
-             .filter(pos -> !(this.level.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.NETHER && this.level.paperConfig().environment.netherCeilingVoidDamageHeight.test(v -> pos.getY() >= v))) // Paper - Configurable nether ceiling damage
-+            // Tentacles start - Custom portals - Allow limiting to specific frame material
-+            .filter(pos -> {
-+                net.minecraft.world.level.chunk.ChunkAccess lowest = this.level.getChunk(pos.getX() >> 4, pos.getZ() >> 4, net.minecraft.world.level.chunk.status.ChunkStatus.EMPTY);
-+                if (framePredicate != null) {
-+                    BlockPos checkPos = pos;
-+                    BlockState checkState;
-+                    do {
-+                        checkPos = checkPos.below();
-+                        checkState = lowest.getBlockState(checkPos);
-+                    } while (checkState.is(Blocks.NETHER_PORTAL));
-+                    if (!framePredicate.test(checkState, level, checkPos)) {
-+                        return false;
+@@ -72,6 +_,20 @@
+                         // why would we generate the chunk?
+                         return false;
+                     }
++
++                    // Tentacles start - Custom portals - Allow limiting to specific frame material
++                    if (framePredicate != null) {
++                        BlockPos checkPos = pos;
++                        BlockState checkState;
++                        do {
++                            checkPos = checkPos.below();
++                            checkState = lowest.getBlockState(checkPos);
++                        } while (checkState.is(Blocks.NETHER_PORTAL));
++                        if (!framePredicate.test(checkState, level, checkPos)) {
++                            return false;
++                        }
 +                    }
-+                }
-+                return true;
-+            })
-+            // Tentacles end - Custom portals - Allow limiting to specific frame material
-             .filter(pos -> this.level.getBlockState(pos).hasProperty(BlockStateProperties.HORIZONTAL_AXIS))
-             .min(Comparator.<BlockPos>comparingDouble(p -> p.distSqr(approximateExitPos)).thenComparingInt(Vec3i::getY));
-     }
++                    // Tentacles end - Custom portals - Allow limiting to specific frame material
+                     return lowest.getBlockState(pos).hasProperty(BlockStateProperties.HORIZONTAL_AXIS);
+                 },
+                 approximateExitPos, radius, Double.MAX_VALUE, PoiManager.Occupancy.ANY, true, records
+@@ -93,11 +_,16 @@
  
      public Optional<BlockUtil.FoundRectangle> createPortal(final BlockPos origin, final Direction.Axis portalAxis) {
          // CraftBukkit start
@@ -55,11 +51,10 @@
 +            frame = Blocks.OBSIDIAN;
 +        }
 +        // Tentacles end - Custom portals - Allow specifying frame material
-+
          Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, portalAxis);
          double closestFullDistanceSqr = -1.0;
          BlockPos closestFullPosition = null;
-@@ -142,7 +_,7 @@
+@@ -175,7 +_,7 @@
              for (int box = -1; box < 2; box++) {
                  for (int width = 0; width < 2; width++) {
                      for (int height = -1; height < 3; height++) {
@@ -68,7 +63,7 @@
                          mutable.setWithOffset(
                              closestFullPosition,
                              width * direction.getStepX() + box * clockWise.getStepX(),
-@@ -159,7 +_,7 @@
+@@ -192,7 +_,7 @@
              for (int height = -1; height < 4; height++) {
                  if (width == -1 || width == 2 || height == -1 || height == 3) {
                      mutable.setWithOffset(closestFullPosition, width * direction.getStepX(), height, width * direction.getStepZ());
