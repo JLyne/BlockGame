@@ -1,0 +1,16 @@
+--- a/net/minecraft/world/level/block/entity/FuelValues.java
++++ b/net/minecraft/world/level/block/entity/FuelValues.java
+@@ -50,11 +_,11 @@
+             .add(ItemTags.BAMBOO_BLOCKS, baseUnit * 3 / 2)
+             .add(ItemTags.PLANKS, baseUnit * 3 / 2)
+             .add(Blocks.BAMBOO_MOSAIC, baseUnit * 3 / 2)
+-            .add(ItemTags.WOODEN_STAIRS, baseUnit * 3 / 2)
++            .add(ItemTags.WOODEN_STAIRS, baseUnit * 3 / 4)
+             .add(Blocks.BAMBOO_MOSAIC_STAIRS, baseUnit * 3 / 2)
+             .add(ItemTags.WOODEN_SLABS, baseUnit * 3 / 4)
+             .add(Blocks.BAMBOO_MOSAIC_SLAB, baseUnit * 3 / 4)
+-            .add(ItemTags.WOODEN_TRAPDOORS, baseUnit * 3 / 2)
++            .add(ItemTags.WOODEN_TRAPDOORS, baseUnit * 3 / 12)
+             .add(ItemTags.WOODEN_PRESSURE_PLATES, baseUnit * 3 / 2)
+             .add(ItemTags.WOODEN_SHELVES, baseUnit * 3 / 2)
+             .add(ItemTags.WOODEN_FENCES, baseUnit * 3 / 2)
