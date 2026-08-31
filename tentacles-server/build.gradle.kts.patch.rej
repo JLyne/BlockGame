@@ -1,0 +1,11 @@
+++++ REJECTED HUNK: 3
+@@ -137,7 +165,7 @@
+ }
+ 
+ dependencies {
+-    implementation(project(":purpur-api")) // Purpur
++    implementation(project(":tentacles-api")) // Purpur // Tentacles
+     implementation("ca.spottedleaf:leafpile:1.0.0")
+     implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
+     implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
+++++ END HUNK

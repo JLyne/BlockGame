@@ -1,6 +1,6 @@
 --- a/purpur-checkstyle/build.gradle.kts
 +++ b/purpur-checkstyle/build.gradle.kts
-@@ -33,7 +33,7 @@ dependencies {
+@@ -33,7 +_,7 @@
      testRuntimeOnly("org.junit.platform:junit-platform-launcher")
      testData.implementationConfigurationName("org.jspecify:jspecify:1.0.0")
  
