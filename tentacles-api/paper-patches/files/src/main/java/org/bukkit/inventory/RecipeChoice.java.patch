@@ -1,0 +1,40 @@
+--- a/src/main/java/org/bukkit/inventory/RecipeChoice.java
++++ b/src/main/java/org/bukkit/inventory/RecipeChoice.java
+@@ -114,8 +_,27 @@
+      */
+     @Contract(value = "_, _ -> new", pure = true)
+     static PredicateChoice predicateChoice(Predicate<? super ItemStack> stackPredicate, ItemStack exampleStack) {
+-        return new PredicateRecipeChoiceImpl(stackPredicate, exampleStack);
+-    }
++        // Tentacles start - allow multiple example items in PredicateChoice
++        return new PredicateRecipeChoiceImpl(stackPredicate, Collections.singletonList(exampleStack));
++    }
++    
++    /**
++     * Creates a recipe choice that will be valid only if an item matches the
++     * given predicate.
++     * <p>
++     * <b>Note:</b> Mutating the {@link ItemStack} within the predicate is not
++     * supported.
++     *
++     * @param stackPredicate the predicate to match against.
++     * @param exampleStacks  a List of example {@link ItemStack}s to be shown in the
++     *                       recipe book. Cannot be empty or air.
++     * @return a new PredicateChoice
++     */
++    @Contract(value = "_, _ -> new", pure = true)
++    static PredicateChoice predicateChoice(Predicate<? super ItemStack> stackPredicate, List<ItemStack> exampleStacks) {
++        return new PredicateRecipeChoiceImpl(stackPredicate, exampleStacks);
++    }
++    // Tentacles end - allow multiple example items in PredicateChoice
+ 
+     /**
+      * Gets a single item stack representative of this stack choice.
+@@ -428,6 +_,6 @@
+      */
+     @ApiStatus.NonExtendable
+     interface PredicateChoice extends RecipeChoice {
+-
++        List<ItemStack> getExamples(); // Tentacles - allow multiple example items in PredicateChoice
+     }
+ }

@@ -1,0 +1,57 @@
+--- a/src/main/java/org/bukkit/inventory/PredicateRecipeChoiceImpl.java
++++ b/src/main/java/org/bukkit/inventory/PredicateRecipeChoiceImpl.java
+@@ -1,29 +_,47 @@
+ package org.bukkit.inventory;
+ 
+ import com.google.common.base.Preconditions;
++
++import java.util.ArrayList;
++import java.util.Collections;
++import java.util.List;
+ import java.util.function.Predicate;
+ import org.jspecify.annotations.NullMarked;
+ 
+ @NullMarked
+-record PredicateRecipeChoiceImpl(Predicate<? super ItemStack> stackPredicate, ItemStack exampleStack) implements RecipeChoice.PredicateChoice {
++record PredicateRecipeChoiceImpl(Predicate<? super ItemStack> stackPredicate, List<ItemStack> examples) implements RecipeChoice.PredicateChoice { // Tentacles - allow multiple example items in PredicateChoice
+ 
+     public PredicateRecipeChoiceImpl {
+         Preconditions.checkArgument(stackPredicate != null, "The item predicate cannot be null");
+-        Preconditions.checkArgument(exampleStack != null, "The example stack cannot be null");
+-        Preconditions.checkArgument(!exampleStack.isEmpty(), "Cannot have empty/air example stack");
++        // Tentacles start - allow multiple example items in PredicateChoice
++        Preconditions.checkArgument(examples != null, "examples");
++        Preconditions.checkArgument(!examples.isEmpty(), "Must have at least one choice");
+ 
+-        exampleStack = exampleStack.clone();
++        for (ItemStack example : examples) {
++            Preconditions.checkArgument(example != null, "Cannot have null example");
++            Preconditions.checkArgument(!example.getType().isAir(), "Cannot have empty/air example");
++        }
++        
++        examples = new ArrayList<>(examples);
++        // Tentacles end - allow multiple example items in PredicateChoice
+     }
+ 
++    // Tentacles start - allow multiple example items in PredicateChoice
+     @Override
+     public ItemStack getItemStack() {
+-        return this.exampleStack.clone();
+-    }
++        return this.examples.getFirst().clone();
++    }
++    
++    @Override
++    public List<ItemStack> getExamples() {
++        return Collections.unmodifiableList(examples);
++    }
++    // Tentacles end - allow multiple example items in PredicateChoice
+ 
+     @SuppressWarnings({"MethodDoesntCallSuperMethod", "FunctionalExpressionCanBeFolded"})
+     @Override
+     public PredicateRecipeChoiceImpl clone() {
+-        return new PredicateRecipeChoiceImpl(this.stackPredicate::test, this.exampleStack);
++        return new PredicateRecipeChoiceImpl(this.stackPredicate::test, this.examples); // Tentacles - allow multiple example items in PredicateChoice
+     }
+ 
+     @Override
