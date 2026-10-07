@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/storage/loot/providers/number/ints/ContextIntProviders.java
++++ b/net/minecraft/world/level/storage/loot/providers/number/ints/ContextIntProviders.java
+@@ -48,6 +_,8 @@
+     public static final ResourceKey<ContextIntProvider> COOKING_TIME_WOOD_ITEMS_EXTRA_SMALL = createKey("cooking/time_wood_items_extra_small");
+     public static final ResourceKey<ContextIntProvider> COOKING_TIME_WOOL = createKey("cooking/time_wool");
+     public static final ResourceKey<ContextIntProvider> COOKING_TIME_WOOD_SLABS = createKey("cooking/time_wood_slabs");
++    public static final ResourceKey<ContextIntProvider> COOKING_TIME_WOOD_STAIRS = createKey("cooking/time_wood_stairs"); // Tentacles - Rebalance wood stair fuel duration for VanillaTweaks
++    public static final ResourceKey<ContextIntProvider> COOKING_TIME_WOOD_TRAPDOORS = createKey("cooking/time_wood_trapdoors"); // Tentacles - Rebalance wood trapdoor fuel duration for VanillaTweaks
+     public static final ResourceKey<ContextIntProvider> COOKING_TIME_WOOD_ITEMS_LARGE = createKey("cooking/time_wood_items_large");
+     public static final ResourceKey<ContextIntProvider> COOKING_TIME_WOOD_ITEMS_SMALL = createKey("cooking/time_wood_items_small");
+     public static final ResourceKey<ContextIntProvider> COOKING_TIME_ROOTS = createKey("cooking/time_roots");

@@ -1,6 +1,15 @@
 --- a/net/minecraft/world/level/block/NetherPortalBlock.java
 +++ b/net/minecraft/world/level/block/NetherPortalBlock.java
-@@ -107,7 +_,7 @@
+@@ -3,6 +_,8 @@
+ import com.mojang.logging.LogUtils;
+ import java.util.Map;
+ import java.util.Optional;
++import java.util.function.Predicate;
++
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+ import net.minecraft.core.particles.ParticleTypes;
+@@ -100,7 +_,7 @@
          Direction.Axis updateAxis = directionToNeighbour.getAxis();
          Direction.Axis axis = state.getValue(AXIS);
          boolean wrongAxis = axis != updateAxis && updateAxis.isHorizontal();
@@ -9,7 +18,7 @@
              ? Blocks.AIR.defaultBlockState()
              : super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
      }
-@@ -145,7 +_,35 @@
+@@ -138,7 +_,35 @@
  
      @Override
      public @Nullable TeleportTransition getPortalDestination(final ServerLevel currentLevel, final Entity entity, final BlockPos portalEntryPos) {
@@ -18,15 +27,15 @@
 +        BlockPos checkPos = portalEntryPos;
 +        BlockState checkState;
 +        Block frameBlock = null;
-+        StatePredicate framePredicate = null;
++        Predicate<BlockState> framePredicate = null;
 +
 +        do {
 +            checkPos = checkPos.below();
 +            checkState = currentLevel.getBlockState(checkPos);
 +        } while(checkState.is(Blocks.NETHER_PORTAL) && checkPos.getY() > currentLevel.getMinY());
 +
-+        for (Map.Entry<ResourceKey<Level>, StatePredicate> entry : PortalShape.framePredicates.entrySet()) {
-+            if (entry.getValue().test(checkState, currentLevel, checkPos)) {
++        for (Map.Entry<ResourceKey<Level>, Predicate<BlockState>> entry : PortalShape.framePredicates.entrySet()) {
++            if (entry.getValue().test(checkState)) {
 +                // Destination world is the world associated with the frame material
 +                // If we are already in that world then the destination is the Overworld
 +                newDimension = currentLevel.dimension().equals(entry.getKey()) ? Level.OVERWORLD : entry.getKey();
@@ -45,7 +54,7 @@
          ServerLevel newLevel = currentLevel.getServer().getLevel(newDimension);
          // Paper start - Add EntityPortalReadyEvent
          io.papermc.paper.event.entity.EntityPortalReadyEvent portalReadyEvent = new io.papermc.paper.event.entity.EntityPortalReadyEvent(entity.getBukkitEntity(), newLevel == null ? null : newLevel.getWorld(), org.bukkit.PortalType.NETHER);
-@@ -177,7 +_,7 @@
+@@ -170,7 +_,7 @@
          newLevel = ((org.bukkit.craftbukkit.CraftWorld) result.to().getWorld()).getHandle();
          newWorldBorder = newLevel.getWorldBorder();
          approximateExitPos = newWorldBorder.clampToBounds(result.to().getX(), result.to().getY(), result.to().getZ());
@@ -54,11 +63,11 @@
          // CraftBukkit end
      }
  
-@@ -189,8 +_,10 @@
+@@ -182,8 +_,10 @@
          final boolean toNether,
          final WorldBorder worldBorder
          , org.bukkit.craftbukkit.event.PortalEventResult result // CraftBukkit
-+        , @Nullable StatePredicate framePredicate // Tentacles - Custom portal frame
++        , @Nullable Predicate<BlockState> framePredicate // Tentacles - Custom portal frame
 +        , @Nullable Block frameBlock // Tentacles - Custom portal frame
      ) {
 -        Optional<BlockPos> exitPortalPos = newLevel.getPortalForcer().findClosestPortalPosition(approximateExitPos, worldBorder, result.searchRadius()); // CraftBukkit
@@ -66,9 +75,9 @@
          BlockUtil.FoundRectangle exitPortal;
          TeleportTransition.PostTeleportTransition post;
          if (exitPortalPos.isPresent()) {
-@@ -207,7 +_,7 @@
-             post = TeleportTransition.PLAY_PORTAL_SOUND.then(e -> e.placePortalTicket(pos));
-         } else if (result.canCreatePortal()) { // CraftBukkit
+@@ -203,7 +_,7 @@
+                 return null;
+             }
              Direction.Axis sourcePortalAxis = entity.level().getBlockState(portalEntryPos).getOptionalValue(AXIS).orElse(Direction.Axis.X);
 -            Optional<BlockUtil.FoundRectangle> createdExit = newLevel.getPortalForcer().createPortal(approximateExitPos, sourcePortalAxis, entity, result.createRadius()); // CraftBukkit
 +            Optional<BlockUtil.FoundRectangle> createdExit = newLevel.getPortalForcer().createPortal(approximateExitPos, sourcePortalAxis, entity, result.createRadius(), frameBlock); // CraftBukkit // Tentacles - Custom portals - Allow specifying frame material

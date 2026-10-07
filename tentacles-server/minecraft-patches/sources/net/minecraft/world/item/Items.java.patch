@@ -1,0 +1,104 @@
+--- a/net/minecraft/world/item/Items.java
++++ b/net/minecraft/world/item/Items.java
+@@ -941,40 +_,40 @@
+     public static final Item ENDER_CHEST = registerBlock(BlockItemIds.ENDER_CHEST, Blocks.ENDER_CHEST);
+     public static final Item EMERALD_BLOCK = registerBlock(BlockItemIds.EMERALD_BLOCK, Blocks.EMERALD_BLOCK);
+     public static final Item OAK_STAIRS = registerBlock(
+-        BlockItemIds.OAK_STAIRS, Blocks.OAK_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.OAK_STAIRS, Blocks.OAK_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_STAIRS) // Tentacles - Rebalance wood stair fuel duration for VanillaTweaks
+     );
+     public static final Item SPRUCE_STAIRS = registerBlock(
+-        BlockItemIds.SPRUCE_STAIRS, Blocks.SPRUCE_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.SPRUCE_STAIRS, Blocks.SPRUCE_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_STAIRS) // Tentacles - Rebalance wood stair fuel duration for VanillaTweaks
+     );
+     public static final Item BIRCH_STAIRS = registerBlock(
+-        BlockItemIds.BIRCH_STAIRS, Blocks.BIRCH_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.BIRCH_STAIRS, Blocks.BIRCH_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_STAIRS) // Tentacles - Rebalance wood stair fuel duration for VanillaTweaks
+     );
+     public static final Item JUNGLE_STAIRS = registerBlock(
+-        BlockItemIds.JUNGLE_STAIRS, Blocks.JUNGLE_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.JUNGLE_STAIRS, Blocks.JUNGLE_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_STAIRS) // Tentacles - Rebalance wood stair fuel duration for VanillaTweaks
+     );
+     public static final Item ACACIA_STAIRS = registerBlock(
+-        BlockItemIds.ACACIA_STAIRS, Blocks.ACACIA_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.ACACIA_STAIRS, Blocks.ACACIA_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_STAIRS) // Tentacles - Rebalance wood stair fuel duration for VanillaTweaks
+     );
+     public static final Item CHERRY_STAIRS = registerBlock(
+-        BlockItemIds.CHERRY_STAIRS, Blocks.CHERRY_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.CHERRY_STAIRS, Blocks.CHERRY_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_STAIRS) // Tentacles - Rebalance wood stair fuel duration for VanillaTweaks
+     );
+     public static final Item DARK_OAK_STAIRS = registerBlock(
+-        BlockItemIds.DARK_OAK_STAIRS, Blocks.DARK_OAK_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.DARK_OAK_STAIRS, Blocks.DARK_OAK_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_STAIRS) // Tentacles - Rebalance wood stair fuel duration for VanillaTweaks
+     );
+     public static final Item PALE_OAK_STAIRS = registerBlock(
+-        BlockItemIds.PALE_OAK_STAIRS, Blocks.PALE_OAK_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.PALE_OAK_STAIRS, Blocks.PALE_OAK_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_STAIRS) // Tentacles - Rebalance wood stair fuel duration for VanillaTweaks
+     );
+     public static final Item MANGROVE_STAIRS = registerBlock(
+-        BlockItemIds.MANGROVE_STAIRS, Blocks.MANGROVE_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.MANGROVE_STAIRS, Blocks.MANGROVE_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_STAIRS) // Tentacles - Rebalance wood stair fuel duration for VanillaTweaks
+     );
+     public static final Item POPLAR_STAIRS = registerBlock(
+-        BlockItemIds.POPLAR_STAIRS, Blocks.POPLAR_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.POPLAR_STAIRS, Blocks.POPLAR_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_STAIRS) // Tentacles - Rebalance wood stair fuel duration for VanillaTweaks
+     );
+     public static final Item BAMBOO_STAIRS = registerBlock(
+-        BlockItemIds.BAMBOO_STAIRS, Blocks.BAMBOO_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.BAMBOO_STAIRS, Blocks.BAMBOO_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_STAIRS) // Tentacles - Rebalance wood stair fuel duration for VanillaTweaks
+     );
+     public static final Item BAMBOO_MOSAIC_STAIRS = registerBlock(
+-        BlockItemIds.BAMBOO_MOSAIC_STAIRS, Blocks.BAMBOO_MOSAIC_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.BAMBOO_MOSAIC_STAIRS, Blocks.BAMBOO_MOSAIC_STAIRS, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_STAIRS) // Tentacles - Rebalance wood stair fuel duration for VanillaTweaks
+     );
+     public static final Item CRIMSON_STAIRS = registerBlock(BlockItemIds.CRIMSON_STAIRS, Blocks.CRIMSON_STAIRS);
+     public static final Item WARPED_STAIRS = registerBlock(BlockItemIds.WARPED_STAIRS, Blocks.WARPED_STAIRS);
+@@ -1393,37 +_,37 @@
+     );
+     public static final Item IRON_TRAPDOOR = registerBlock(BlockItemIds.IRON_TRAPDOOR, Blocks.IRON_TRAPDOOR);
+     public static final Item OAK_TRAPDOOR = registerBlock(
+-        BlockItemIds.OAK_TRAPDOOR, Blocks.OAK_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.OAK_TRAPDOOR, Blocks.OAK_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_TRAPDOORS) // Tentacles - Rebalance wood trapdoor fuel duration for VanillaTweaks
+     );
+     public static final Item SPRUCE_TRAPDOOR = registerBlock(
+-        BlockItemIds.SPRUCE_TRAPDOOR, Blocks.SPRUCE_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.SPRUCE_TRAPDOOR, Blocks.SPRUCE_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_TRAPDOORS) // Tentacles - Rebalance wood trapdoor fuel duration for VanillaTweaks
+     );
+     public static final Item BIRCH_TRAPDOOR = registerBlock(
+-        BlockItemIds.BIRCH_TRAPDOOR, Blocks.BIRCH_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.BIRCH_TRAPDOOR, Blocks.BIRCH_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_TRAPDOORS) // Tentacles - Rebalance wood trapdoor fuel duration for VanillaTweaks
+     );
+     public static final Item JUNGLE_TRAPDOOR = registerBlock(
+-        BlockItemIds.JUNGLE_TRAPDOOR, Blocks.JUNGLE_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.JUNGLE_TRAPDOOR, Blocks.JUNGLE_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_TRAPDOORS) // Tentacles - Rebalance wood trapdoor fuel duration for VanillaTweaks
+     );
+     public static final Item ACACIA_TRAPDOOR = registerBlock(
+-        BlockItemIds.ACACIA_TRAPDOOR, Blocks.ACACIA_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.ACACIA_TRAPDOOR, Blocks.ACACIA_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_TRAPDOORS) // Tentacles - Rebalance wood trapdoor fuel duration for VanillaTweaks
+     );
+     public static final Item CHERRY_TRAPDOOR = registerBlock(
+-        BlockItemIds.CHERRY_TRAPDOOR, Blocks.CHERRY_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.CHERRY_TRAPDOOR, Blocks.CHERRY_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_TRAPDOORS) // Tentacles - Rebalance wood trapdoor fuel duration for VanillaTweaks
+     );
+     public static final Item DARK_OAK_TRAPDOOR = registerBlock(
+-        BlockItemIds.DARK_OAK_TRAPDOOR, Blocks.DARK_OAK_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.DARK_OAK_TRAPDOOR, Blocks.DARK_OAK_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_TRAPDOORS) // Tentacles - Rebalance wood trapdoor fuel duration for VanillaTweaks
+     );
+     public static final Item PALE_OAK_TRAPDOOR = registerBlock(
+-        BlockItemIds.PALE_OAK_TRAPDOOR, Blocks.PALE_OAK_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.PALE_OAK_TRAPDOOR, Blocks.PALE_OAK_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_TRAPDOORS) // Tentacles - Rebalance wood trapdoor fuel duration for VanillaTweaks
+     );
+     public static final Item MANGROVE_TRAPDOOR = registerBlock(
+-        BlockItemIds.MANGROVE_TRAPDOOR, Blocks.MANGROVE_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.MANGROVE_TRAPDOOR, Blocks.MANGROVE_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_TRAPDOORS) // Tentacles - Rebalance wood trapdoor fuel duration for VanillaTweaks
+     );
+     public static final Item POPLAR_TRAPDOOR = registerBlock(
+-        BlockItemIds.POPLAR_TRAPDOOR, Blocks.POPLAR_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.POPLAR_TRAPDOOR, Blocks.POPLAR_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_TRAPDOORS) // Tentacles - Rebalance wood trapdoor fuel duration for VanillaTweaks
+     );
+     public static final Item BAMBOO_TRAPDOOR = registerBlock(
+-        BlockItemIds.BAMBOO_TRAPDOOR, Blocks.BAMBOO_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_BLOCKS)
++        BlockItemIds.BAMBOO_TRAPDOOR, Blocks.BAMBOO_TRAPDOOR, p -> p.cookingFuel(ContextIntProviders.COOKING_TIME_WOOD_TRAPDOORS) // Tentacles - Rebalance wood trapdoor fuel duration for VanillaTweaks
+     );
+     public static final Item CRIMSON_TRAPDOOR = registerBlock(BlockItemIds.CRIMSON_TRAPDOOR, Blocks.CRIMSON_TRAPDOOR);
+     public static final Item WARPED_TRAPDOOR = registerBlock(BlockItemIds.WARPED_TRAPDOOR, Blocks.WARPED_TRAPDOOR);

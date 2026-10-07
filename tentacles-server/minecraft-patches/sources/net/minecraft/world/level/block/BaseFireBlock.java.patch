@@ -1,6 +1,15 @@
 --- a/net/minecraft/world/level/block/BaseFireBlock.java
 +++ b/net/minecraft/world/level/block/BaseFireBlock.java
-@@ -172,11 +_,16 @@
+@@ -1,6 +_,8 @@
+ package net.minecraft.world.level.block;
+ 
+ import java.util.Optional;
++import java.util.function.Predicate;
++
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+ import net.minecraft.core.particles.ParticleTypes;
+@@ -169,11 +_,16 @@
      protected void onPlace(final BlockState state, final Level level, final BlockPos pos, final BlockState oldState, final boolean movedByPiston, net.minecraft.world.item.context.UseOnContext context) { // CraftBukkit - context
          if (!oldState.is(state.getBlock())) {
              if (inPortalDimension(level)) {
@@ -9,7 +18,7 @@
 -                    optionalShape.get().createPortalBlocks(level, (context == null) ? null : context.getPlayer()); // CraftBukkit - player
 -                    return;
 +                // Tentacles start - Custom portals - Check all frame predicates
-+                for (StatePredicate predicate: PortalShape.framePredicates.values()) {
++                for (Predicate<BlockState> predicate: PortalShape.framePredicates.values()) {
 +                    Optional<PortalShape> optionalShape = PortalShape.findEmptyPortalShape(level, pos, Direction.Axis.X, predicate);
 +
 +                    if (optionalShape.isPresent()) {
@@ -21,20 +30,20 @@
              }
  
              if (!state.canSurvive(level, pos)) {
-@@ -213,23 +_,22 @@
-         }
+@@ -211,15 +_,19 @@
  
          BlockPos.MutableBlockPos testPos = pos.mutable();
--        boolean hasObsidian = false;
  
 +        // Tentacles start - Custom portals  - Check all frame predicates
          for (Direction face : Direction.values()) {
--            if (PortalShape.FRAME.test(level.getBlockState(testPos.set(pos).move(face)), level, testPos)) { // Purpur - Crying obsidian valid for portal frames
--                hasObsidian = true;
--                break;
-+            BlockState state = level.getBlockState(testPos.set(pos).move(face));
-+            for (StatePredicate predicate: PortalShape.framePredicates.values()) {
-+                if (predicate.test(state, level, pos)) {
+             BlockState state = level.getBlockState(testPos.set(pos).move(face));
+-            if (PortalShape.FRAME.test(state)) {
+-                Direction.Axis preferredAxis = forwardDirection.getAxis().isHorizontal()
+-                    ? forwardDirection.getCounterClockWise().getAxis()
+-                    : Direction.Plane.HORIZONTAL.getRandomAxis(level.getRandom());
+-                return PortalShape.findEmptyPortalShape(level, pos, preferredAxis).isPresent();
++            for (Predicate<BlockState> predicate: PortalShape.framePredicates.values()) {
++                if (predicate.test(state)) {
 +                    Direction.Axis preferredAxis = forwardDirection.getAxis().isHorizontal()
 +                            ? forwardDirection.getCounterClockWise().getAxis()
 +                            : Direction.Plane.HORIZONTAL.getRandomAxis(level.getRandom());
@@ -42,17 +51,7 @@
 +                }
              }
          }
- 
--        if (!hasObsidian) {
--            return false;
--        }
--
--        Direction.Axis preferredAxis = forwardDirection.getAxis().isHorizontal()
--            ? forwardDirection.getCounterClockWise().getAxis()
--            : Direction.Plane.HORIZONTAL.getRandomAxis(level.getRandom());
--        return PortalShape.findEmptyPortalShape(level, pos, preferredAxis).isPresent();
-+        return false;
 +        // Tentacles end - Custom portals - Check all frame predicates
-     }
  
-     // CraftBukkit start
+         return false;
+     }
