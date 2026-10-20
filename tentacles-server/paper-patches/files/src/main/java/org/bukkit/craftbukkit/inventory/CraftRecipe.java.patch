@@ -1,6 +1,6 @@
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftRecipe.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftRecipe.java
-@@ -35,7 +_,7 @@
+@@ -53,7 +_,7 @@
          } else if (bukkit instanceof final RecipeChoice.ItemTypeChoice itemTypeChoice) {
              stack = Ingredient.of(PaperRegistrySets.convertToNms(Registries.ITEM, Conversions.global().lookup(), itemTypeChoice.itemTypes()));
          } else if (bukkit instanceof final RecipeChoice.PredicateChoice predicateChoice) {

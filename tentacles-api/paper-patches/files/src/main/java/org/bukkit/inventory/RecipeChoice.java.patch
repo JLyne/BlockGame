@@ -30,7 +30,7 @@
  
      /**
       * Gets a single item stack representative of this stack choice.
-@@ -428,6 +_,6 @@
+@@ -407,6 +_,6 @@
       */
      @ApiStatus.NonExtendable
      interface PredicateChoice extends RecipeChoice {
