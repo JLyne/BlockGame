@@ -1,16 +1,35 @@
 --- a/net/minecraft/world/level/chunk/storage/RegionFileVersion.java
 +++ b/net/minecraft/world/level/chunk/storage/RegionFileVersion.java
-@@ -91,6 +_,16 @@
+@@ -91,6 +_,35 @@
          return selected;
      }
  
 +    // Tentacles start - Per-world region compression format
-+    public static RegionFileVersion getSelected(String level) {
++    public static RegionFileVersion getSelected(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dimension) {
 +        // Can't use PurpurWorldConfig here as WorldUpgrader (--forceUpgrade) happens before the world is loaded
-+        //FIXME: getString might be slow?
++        // Speed should be fine as we are only doing this once per world now
 +        String format = org.purpurmc.purpur.PurpurConfig.config
-+                .getString("world-settings." + level + ".settings.compression-format", "default").toLowerCase();
-+        return VERSIONS_BY_NAME.getOrDefault(format, getSelected());
++                .getString("world-settings." + dimension.identifier() + ".settings.region-file-compression", 
++                           "default");
++
++        if (format.equals("default")) {
++            return getSelected();
++        }
++
++        RegionFileVersion version = VERSIONS_BY_NAME.get(format);
++        if (version != null) {
++            return version;
++        } else {
++            LOGGER.error(
++                    "Invalid `region-file-compression` value `{}` for world `{}`. Please use one of: {}, {}",
++                    format,
++                    dimension,
++                    String.join(", ", VERSIONS_BY_NAME.keySet()),
++                    "default"
++            );
++            
++            return getSelected();
++        }
 +    }
 +    // Tentacles end- Per-world region compression format
 +

@@ -5,7 +5,7 @@
  
      public RegionFile(final RegionStorageInfo info, final Path path, final Path externalFileDir, final boolean sync) throws IOException {
 -        this(info, path, externalFileDir, RegionFileVersion.getSelected(), sync);
-+        this(info, path, externalFileDir, RegionFileVersion.getSelected(info.level()), sync); // Tentacles - Per-world region compression format
++        this(info, path, externalFileDir, RegionFileVersion.getSelected(info.dimension()), sync); // Tentacles - Per-world region compression format
      }
  
      public RegionFile(final RegionStorageInfo info, final Path path, final Path externalFileDir, final RegionFileVersion version, final boolean sync) throws IOException {

@@ -1,0 +1,27 @@
+--- a/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
++++ b/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
+@@ -31,6 +_,7 @@
+     private static final int REGION_SHIFT = 5;
+     private static final int MAX_NON_EXISTING_CACHE = 1024 * 4;
+     private final it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet nonExistingRegionFiles = new it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet();
++    private final RegionFileVersion version; // Tentacles - Per-world region compression format
+     private static String getRegionFileName(final int chunkX, final int chunkZ) {
+         return "r." + (chunkX >> REGION_SHIFT) + "." + (chunkZ >> REGION_SHIFT) + ".mca";
+     }
+@@ -224,6 +_,7 @@
+         this.folder = folder;
+         this.sync = sync;
+         this.info = info;
++        this.version = RegionFileVersion.getSelected(info.dimension()); // Tentacles - Per-world region compression format
+     }
+ 
+     private @Nullable RegionFile getRegionFile(final ChunkPos pos, final boolean create) throws IOException {
+@@ -268,7 +_,7 @@
+ 
+             FileUtil.createDirectoriesSafe(this.folder);
+ 
+-            final RegionFile ret = new RegionFile(this.info, regionPath, this.folder, this.sync);
++            final RegionFile ret = new RegionFile(this.info, regionPath, this.folder, this.version, this.sync); // Tentacles - Per-world region compression format
+ 
+             this.regionCache.putAndMoveToFirst(key, Optional.of(ret));
+ 
